@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>ARB_TIKHON — обучение P2P без карт</title>
+<style>
+:root{
+  --bg:#071314;--bg2:#0b1d1f;--card:#0f2427;--line:#1c3a3e;
+  --text:#e8f5f4;--mute:#8fb0b0;--acc:#2de2c8;--acc2:#16b8a2;--ink:#03211d;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:rgba(7,19,20,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;letter-spacing:.5px;font-size:18px}
+.logo b{color:var(--acc)}
+.btn{display:inline-block;border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:12px;padding:12px 20px;background:var(--acc);color:var(--ink);transition:transform .15s,background .15s}
+.btn:hover{background:#5df0dc;transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--acc);background:transparent}
+.btn.sm{padding:8px 16px;font-size:14px}
+.hero{padding:64px 0 44px}
+.tag{display:inline-block;font-size:13px;color:var(--acc);border:1px solid var(--line);border-radius:99px;padding:5px 14px;margin-bottom:20px}
+h1{font-size:clamp(40px,9vw,76px);line-height:1.02;margin:0 0 6px;letter-spacing:-1px}
+h2.big{font-size:clamp(28px,6vw,46px);line-height:1.1;margin:0 0 18px;font-weight:700}
+h2.big em{font-style:normal;color:var(--acc)}
+.lead{color:var(--mute);max-width:560px;font-size:18px;margin:0 0 28px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.marq{overflow:hidden;border-block:1px solid var(--line);background:var(--bg2);margin:28px 0}
+.marq div{display:flex;gap:36px;white-space:nowrap;padding:14px 0;width:max-content;animation:m 32s linear infinite;color:var(--mute);font-size:15px}
+@keyframes m{to{transform:translateX(-50%)}}
+section{padding:44px 0}
+h2{font-size:clamp(26px,5vw,36px);margin:0 0 8px}
+.sub{color:var(--mute);margin:0 0 24px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 16px}
+.calc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:22px;grid-template-columns:1fr 1fr}
+@media(max-width:760px){.calc{grid-template-columns:1fr}}
+label{display:block;font-size:14px;color:var(--mute);margin-bottom:6px}
+label b{float:right;color:var(--acc)}
+input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:12px 14px;margin-bottom:14px}
+input[type=text]:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:transparent}
+input[type=range]{width:100%;accent-color:var(--acc);margin-bottom:14px}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.r{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+.r span{display:block;font-size:13px;color:var(--mute)}
+.r strong{font-size:20px;display:block;margin-top:2px;word-break:break-word}
+.r.main{grid-column:1/-1;border-color:var(--acc2)}
+.r.main strong{font-size:30px;color:var(--acc)}
+.neg{color:#ff7b7b!important}
+.note{font-size:13px;color:var(--mute);margin-top:14px}
+.tar{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.t{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;position:relative}
+.t.top{border-color:var(--acc)}
+.badge{position:absolute;top:-11px;right:16px;background:var(--acc);color:var(--ink);font-size:12px;font-weight:800;border-radius:99px;padding:3px 12px}
+.t h3{margin:0 0 4px;font-size:20px}
+.t .d{color:var(--mute);font-size:14px;margin:0 0 12px}
+.price{font-size:32px;font-weight:800;margin-bottom:14px}
+.t ul{margin:0 0 20px;padding-left:18px;color:var(--mute);font-size:14.5px;flex:1}
+.t li{margin-bottom:5px}
+.t .btn{text-align:center}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700}
+details p{color:var(--mute);margin:10px 0 0}
+.cta{text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:44px 20px;margin:20px 0}
+footer{padding:30px 0 40px;color:var(--mute);font-size:13px}
+@media(prefers-reduced-motion:reduce){.marq div{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header id="top"><div class="wrap nav">
+  <a class="logo" href="#top">ARB<b>_</b>TIKHON</a>
+  <a class="btn sm" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Написать</a>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <span class="tag">Обучение P2P без карт</span>
+    <h1>ARB_TIKHON</h1>
+    <h2 class="big">Работа без карт <em>с наставником</em></h2>
+    <p class="lead">Рабочие связки без карт, обменники, мейкер, созвоны и поддержка 24/7. Довожу вас до заработка за руку.</p>
+    <div class="row">
+      <a class="btn" href="#tariffs">Выбрать тариф</a>
+      <a class="btn ghost" href="#bundles">Какие связки есть</a>
+      <a class="btn ghost" href="#calc">Калькулятор спреда</a>
+    </div>
+  </div>
+</main>
+
+<div class="marq"><div id="mq"></div></div>
+
+<main class="wrap">
+  <section id="bundles">
+    <h2>Связки</h2>
+    <p class="sub">Рабочие схемы, которые разбираем на обучении.</p>
+    <div class="chips">
+      <span class="chip">🇮🇳 Индия без карт</span><span class="chip">🇹🇷 Турция без карт</span>
+      <span class="chip">🇰🇿 Казахстан без карт</span><span class="chip">Tg Wallet / Bybit без карт</span>
+      <span class="chip">🇬🇪 Грузия / 🇧🇾 Беларусь без карт</span><span class="chip">Связка с картами по TON</span>
+      <span class="chip">Стакан обменник без карт</span><span class="chip">Связка Т-Банк</span>
+    </div>
+  </section>
+
+  <section id="calc">
+    <h2>Калькулятор спреда</h2>
+    <p class="sub">Покупаешь USDT дешевле, продаёшь дороже. Подставь свои цены и посмотри прибыль за круг, день и месяц.</p>
+    <div class="calc">
+      <div>
+        <label for="inv">Вложение, ₽</label>
+        <input type="text" id="inv" inputmode="decimal" value="100000" autocomplete="off">
+        <label for="buy">Купил по, ₽</label>
+        <input type="text" id="buy" inputmode="decimal" value="92" autocomplete="off">
+        <label for="sell">Продал по, ₽</label>
+        <input type="text" id="sell" inputmode="decimal" value="95" autocomplete="off">
+        <label for="fee">Комиссии, % <b id="feeV">0</b></label>
+        <input type="range" id="fee" min="0" max="5" step="0.1" value="0">
+        <label for="laps">Кругов в день <b id="lapsV">3</b></label>
+        <input type="range" id="laps" min="1" max="20" step="1" value="3">
+      </div>
+      <div class="res">
+        <div class="r main"><span>Прибыль за круг</span><strong id="oProfit">0 ₽</strong></div>
+        <div class="r"><span>Спред</span><strong id="oSpread">0%</strong></div>
+        <div class="r"><span>Куплено USDT</span><strong id="oUsdt">0</strong></div>
+        <div class="r"><span>Выручка после продажи</span><strong id="oRev">0 ₽</strong></div>
+        <div class="r"><span>За день</span><strong id="oDay">0 ₽</strong></div>
+        <div class="r" style="grid-column:1/-1"><span>За 30 дней</span><strong id="oMonth">0 ₽</strong></div>
+      </div>
+    </div>
+    <p class="note">Учебный расчёт на примере. Лимиты, блокировки, комиссии платёжных систем и реальный спред зависят от рынка. Доход не гарантируется.</p>
+  </section>
+
+  <section id="tariffs">
+    <h2>Тарифы</h2>
+    <p class="sub">Не знаешь, какой выбрать? Напиши, подскажу под твою ситуацию.</p>
+    <div class="tar">
+      <div class="t">
+        <h3>Приватка</h3><p class="d">Связки без карт</p>
+        <div class="price">4 999 ₽</div>
+        <ul>
+          <li>Индия без карт</li><li>Турция без карт</li><li>Казахстан без карт</li>
+          <li>Tg Wallet / Bybit без карт</li><li>Грузия / Беларусь без карт</li>
+          <li>Связка с картами по TON</li><li>Стакан обменник без карт</li><li>Связка Т-Банк</li>
+        </ul>
+        <a class="btn ghost" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Выбрать «Приватка»</a>
+      </div>
+      <div class="t top">
+        <span class="badge">Полный</span>
+        <h3>Личное обучение</h3><p class="d">Работа без карт. Довожу вас до заработка за руку</p>
+        <div class="price">19 990 ₽</div>
+        <ul>
+          <li>Личное обучение со мной (по звонку или в чате)</li>
+          <li>6 связок: Индия, Турция, Казахстан, Tg Wallet / Bybit, Грузия / Беларусь без карт и стакан обменник без карт</li>
+          <li>Связка Т-Банк</li><li>Помощь с мейкером</li><li>Группа с видеороликами</li>
+          <li>Группа с информацией при работе</li><li>Обменники для работы (16 штук)</li>
+          <li>Созвоны и разбор связок в созвоне</li><li>Поддержка 24/7</li>
+          <li>Помощь с апелляциями</li><li>Приватка TIKHON</li>
+        </ul>
+        <a class="btn" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Выбрать «Личное обучение»</a>
+      </div>
+      <div class="t">
+        <h3>Tg Wallet / Bybit без карт</h3><p class="d">Личное обучение</p>
+        <div class="price">12 990 ₽</div>
+        <ul>
+          <li>Видеоуроки</li><li>Связь со мной</li><li>Помощь с апелляциями</li>
+          <li>Поддержка 24/7</li><li>Обменники для работы</li><li>Личное кураторство</li><li>Созвоны</li>
+        </ul>
+        <a class="btn ghost" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Выбрать этот тариф</a>
+      </div>
+      <div class="t">
+        <h3>Обучение Маги Генжаева</h3><p class="d">Отдельный формат</p>
+        <div class="price">3 000 ₽</div>
+        <ul><li>Обучение Маги Генжаева</li></ul>
+        <a class="btn ghost" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Выбрать это обучение</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Частые вопросы</h2>
+    <details><summary>Какой тариф выбрать?</summary><p>Напишите мне в Telegram: расскажу, чем отличаются форматы, и подберу вариант под вашу ситуацию.</p></details>
+    <details><summary>Как проходит оплата?</summary><p>Согласуется в личной переписке. Пароли и данные карт в переписке не отправляйте никогда.</p></details>
+    <details><summary>Какие риски есть у P2P?</summary><p>Блокировки, потеря средств, изменение курса и правил площадок. На обучении разбираем, как снижать риски, но полностью они не исчезают.</p></details>
+  </section>
+
+  <div class="cta">
+    <h2 class="big">Готов начать?</h2>
+    <p class="lead" style="margin:0 auto 22px">Напиши в Telegram, отвечу лично.</p>
+    <a class="btn" href="https://t.me/arb_tikhon" target="_blank" rel="noopener">Написать в Telegram</a>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 ARB_TIKHON. Информационная страница. Образовательный материал, не инвестиционная рекомендация.</p>
+  <p>P2P и операции с цифровыми активами сопряжены с финансовыми, правовыми и платформенными рисками. Доход не гарантируется. Соблюдайте законодательство и правила сервисов.</p>
+</div></footer>
+
+<script>
+(function(){
+  var items=["Индия без карт","Турция без карт","Казахстан без карт","Tg Wallet / Bybit","Грузия / Беларусь","Связка по TON","Стакан обменник","Связка Т-Банк"];
+  var html=items.map(function(t){return "<span>"+t+"</span>"}).join("");
+  document.getElementById("mq").innerHTML=html+html;
+
+  function $(id){return document.getElementById(id)}
+  function num(v){
+    var n=parseFloat(String(v).replace(/\s/g,"").replace(",","."));
+    return isFinite(n)?n:0;
+  }
+  function fmt(n,d){
+    return n.toLocaleString("ru-RU",{minimumFractionDigits:d||0,maximumFractionDigits:d===undefined?0:d});
+  }
+  function rub(n){return fmt(n,0)+" ₽"}
+  function setSigned(el,n,text){
+    el.textContent=text;
+    el.classList.toggle("neg",n<0);
+  }
+  function calc(){
+    var inv=num($("inv").value),buy=num($("buy").value),sell=num($("sell").value);
+    var fee=num($("fee").value),laps=num($("laps").value);
+    $("feeV").textContent=fmt(fee,1).replace(/,0$/,"");
+    $("lapsV").textContent=fmt(laps,0);
+    var usdt=buy>0?inv/buy:0;
+    var rev=usdt*sell;
+    var profit=rev*(1-fee/100)-inv;
+    var spread=buy>0?(sell-buy)/buy*100:0;
+    var day=profit*laps;
+    $("oUsdt").textContent=fmt(usdt,2);
+    $("oRev").textContent=rub(rev);
+    setSigned($("oProfit"),profit,rub(profit));
+    setSigned($("oSpread"),spread,fmt(spread,2)+"%");
+    setSigned($("oDay"),day,rub(day));
+    setSigned($("oMonth"),day*30,rub(day*30));
+  }
+  ["inv","buy","sell","fee","laps"].forEach(function(id){
+    $(id).addEventListener("input",calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
